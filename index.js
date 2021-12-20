@@ -1,6 +1,11 @@
+const FACEBOOK_GRAPH_API_BASE_URL = 'https://graph.facebook.com/v2.6/';
+const PAGE_ACCESS_TOKEN = process.env.PAGE_ACCESS_TOKEN;
+
+
 const
   express = require('express'),
   bodyParser = require('body-parser'),
+  request = require('request'),
   app = express().use(bodyParser.json()); // creates express http server
 
 // Sets server port and logs message on success
@@ -21,6 +26,21 @@ app.post('/webhook', (req, res) => {
       // will only ever contain one message, so we get index 0
       let webhook_event = entry.messaging[0];
       console.log(webhook_event);
+
+
+      // Get the sender PSID
+      let senderPsid = webhookEvent.sender.id;
+      console.log('Sender PSID: ' + senderPsid);
+
+      // Check if the event is a message or postback and
+      // pass the event to the appropriate handler function
+      if (webhookEvent.message) {
+        handleMessage(senderPsid, webhookEvent.message);
+      } else if (webhookEvent.postback) {
+        handlePostback(senderPsid, webhookEvent.postback);
+      }
+
+
     });
 
     // Returns a '200 OK' response to all requests
@@ -59,4 +79,47 @@ app.get('/webhook', (req, res) => {
       res.sendStatus(403);      
     }
   }
+
+
+  
 });
+
+// Handle incoming messages to bot
+function handleMessage(sender_psid, received_message) {
+  let response;
+
+  if (received_message.text.replace(/[^\w\s]/gi, '').trim().toLowerCase()) {
+      response = {
+          "text": `Tu mensaje fue: "${received_message.text}".`
+      };
+
+  } else {
+      response = {
+          "text": `Perdon, no te entendi.`
+      }
+  }
+}
+
+function callSendAPI(sender_psid, response) {
+  // Construct the message body
+  console.log('message to be sent: ', response);
+  let request_body = {
+    "recipient": {
+      "id": sender_psid
+    },
+    "message": response
+  }
+
+  request({
+    "url": `${FACEBOOK_GRAPH_API_BASE_URL}me/messages`,
+    "qs": { "access_token": PAGE_ACCESS_TOKEN },
+    "method": "POST",
+    "json": request_body
+  }, (err, res, body) => {
+    console.log("Message Sent Response body:", body);
+    if (err) {
+      console.error("Unable to send message:", err);
+    }
+  });
+
+}
