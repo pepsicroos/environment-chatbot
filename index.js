@@ -91,7 +91,7 @@ app.get('/webhook', (req, res) => {
 function handleMessage(senderPsid, received_message) {
   let response;
 
-  if (received_message.text.replace(/[^\w\s]/gi, '').trim().toLowerCase()) {
+  if (received_message.text) {
       response = {
           "text": `Tu mensaje fue: "${received_message.text}".`
       };
@@ -101,6 +101,7 @@ function handleMessage(senderPsid, received_message) {
           "text": `Perdon, no te entendi.`
       }
   }
+  callSendAPI(senderPsid, response);
 }
 
 
@@ -115,7 +116,7 @@ function callSendAPI(senderPsid, response) {
   }
 
   request({
-    "url": `${FACEBOOK_GRAPH_API_BASE_URL}me/messages`,
+    "uri": 'https://graph.facebook.com/v2.6/me/messages',
     "qs": { "access_token": PAGE_ACCESS_TOKEN },
     "method": "POST",
     "json": request_body
