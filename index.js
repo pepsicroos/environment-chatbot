@@ -24,12 +24,12 @@ app.post('/webhook', (req, res) => {
 
       // Gets the message. entry.messaging is an array, but 
       // will only ever contain one message, so we get index 0
-      let webhook_event = entry.messaging[0];
+      const webhook_event = entry.messaging[0];
       console.log(webhook_event);
 
 
       // Get the sender PSID
-      let senderPsid = webhook_event.sender.id;
+      const senderPsid = webhook_event.sender.id;
       console.log('Sender PSID: ' + senderPsid);
 
       // Check if the event is a message or postback and
@@ -85,7 +85,7 @@ app.get('/webhook', (req, res) => {
 });
 
 // Handle incoming messages to bot
-function handleMessage(sender_psid, received_message) {
+function handleMessage(senderPsid, received_message) {
   let response;
 
   if (received_message.text.replace(/[^\w\s]/gi, '').trim().toLowerCase()) {
@@ -100,12 +100,12 @@ function handleMessage(sender_psid, received_message) {
   }
 }
 
-function callSendAPI(sender_psid, response) {
+function callSendAPI(senderPsid, response) {
   // Construct the message body
   console.log('message to be sent: ', response);
-  let request_body = {
+  const request_body = {
     "recipient": {
-      "id": sender_psid
+      "id": senderPsid
     },
     "message": response
   }
