@@ -81,51 +81,54 @@ app.get('/webhook', (req, res) => {
   }
 
 
-  function handleMessage(senderPsid, received_message) {
-    let response;
   
-    if (received_message.text.replace(/[^\w\s]/gi, '').trim().toLowerCase()) {
-        response = {
-            "text": `Tu mensaje fue: "${received_message.text}".`
-        };
-  
-    } else {
-        response = {
-            "text": `Perdon, no te entendi.`
-        }
-    }
-  }
-
-
-  function callSendAPI(senderPsid, response) {
-    // Construct the message body
-    console.log('message to be sent: ', response);
-    const request_body = {
-      "recipient": {
-        "id": senderPsid
-      },
-      "message": response
-    }
-  
-    request({
-      "url": `${FACEBOOK_GRAPH_API_BASE_URL}me/messages`,
-      "qs": { "access_token": PAGE_ACCESS_TOKEN },
-      "method": "POST",
-      "json": request_body
-    }, (err, res, body) => {
-      console.log("Message Sent Response body:", body);
-      if (err) {
-        console.error("Unable to send message:", err);
-      }
-    });
-  
-  }
 
 
 
 });
 
 // Handle incoming messages to bot
+function handleMessage(senderPsid, received_message) {
+  let response;
+
+  if (received_message.text.replace(/[^\w\s]/gi, '').trim().toLowerCase()) {
+      response = {
+          "text": `Tu mensaje fue: "${received_message.text}".`
+      };
+
+  } else {
+      response = {
+          "text": `Perdon, no te entendi.`
+      }
+  }
+}
+
+
+function callSendAPI(senderPsid, response) {
+  // Construct the message body
+  console.log('message to be sent: ', response);
+  const request_body = {
+    "recipient": {
+      "id": senderPsid
+    },
+    "message": response
+  }
+
+  request({
+    "url": `${FACEBOOK_GRAPH_API_BASE_URL}me/messages`,
+    "qs": { "access_token": PAGE_ACCESS_TOKEN },
+    "method": "POST",
+    "json": request_body
+  }, (err, res, body) => {
+    console.log("Message Sent Response body:", body);
+    if (err) {
+      console.error("Unable to send message:", err);
+    }
+  });
+
+}
+
+
 
 
 
