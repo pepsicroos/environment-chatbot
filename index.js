@@ -101,7 +101,7 @@ function handleMessage(senderPsid, received_message) {
           "text": `Perdon, no te entendi.`
       }
   }
-  callSendAPI(senderPsid, response);
+  callSendAPI(senderPsid, response);//
 }
 
 
